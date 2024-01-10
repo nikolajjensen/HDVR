@@ -29,7 +29,7 @@ int main() {
     Metrics metrics = hdvr.train(epochs);
     log_info_nl("=== SUCCESS ===");
 
-    metrics.save(".", "experiment");
+    metrics.save("./experiments", "experiment");
     model.save(MEMORY_PATH);
 
     return 0;
