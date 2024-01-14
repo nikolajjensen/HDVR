@@ -1,0 +1,4 @@
+epoch,error,accuracy
+0,0,86.8505
+1,8.67265,92.5593
+"epochs: 1, levels: 100, dimensions: 5000, frequency points: 617"

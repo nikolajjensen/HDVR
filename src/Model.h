@@ -23,7 +23,7 @@
 
 #include "hype/ContinuousItemMemory.h"
 #include "hype/AssociativeMemory.h"
-#include "hype/LevelMemory.h"
+#include "hype/FrequencyChannelMemory.h"
 
 
 namespace hdvr {
@@ -31,13 +31,13 @@ namespace hdvr {
     template<std::size_t L, std::size_t D, std::size_t F, hype::SeedingStrategy S>
     class Model {
     public:
-        Model() : continuousItemMemory(L, D, S), levelMemory(F, D, S) {}
+        Model() : continuousItemMemory(L, D, S), frequencyChannelMemory(F, D, S) {}
 
         bool load(const std::string &path) {
             try {
                 associativeMemory.load(path + "/./associative_memory.mem");
                 continuousItemMemory.load(path + "/./continuous_memory.mem");
-                levelMemory.load(path + "/./level_memory.mem");
+                frequencyChannelMemory.load(path + "/./level_memory.mem");
                 return true;
             } catch (std::runtime_error e) {
                 *this = Model<L, D, F, S>();
@@ -49,7 +49,7 @@ namespace hdvr {
             try {
                 associativeMemory.save(path + "/./associative_memory.mem");
                 continuousItemMemory.save(path + "/./continuous_memory.mem");
-                levelMemory.save(path + "/./level_memory.mem");
+                frequencyChannelMemory.save(path + "/./level_memory.mem");
                 return true;
             } catch (std::runtime_error &e) {
                 hype::log_error_nl("Failed to save model: ", e.what());
@@ -58,13 +58,13 @@ namespace hdvr {
         }
 
         bool blank() const {
-            return associativeMemory.size() == 0 && continuousItemMemory.size() == 0 && levelMemory.size() == 0;
+            return associativeMemory.size() == 0 && continuousItemMemory.size() == 0 && frequencyChannelMemory.size() == 0;
         }
 
     public:
         hype::AssociativeMemory<Vect<D>> associativeMemory;
         hype::ContinuousItemMemory<Vect<D>> continuousItemMemory;
-        hype::LevelMemory<Vect<D>> levelMemory;
+        hype::FrequencyChannelMemory<Vect<D>> frequencyChannelMemory;
     };
 
 } // namespace hdvr

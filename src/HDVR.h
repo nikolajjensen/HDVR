@@ -45,14 +45,14 @@ namespace hdvr {
             data_t range = MAX_FREQUENCY - MIN_FREQUENCY;
             data_t step = range / bin_levels;
 
-            for (int i = 0; i <= bin_levels; ++i) {
+            for (int i = 0; i < bin_levels; ++i) {
                 data_t threshold = MIN_FREQUENCY + (step * (i + 1));
                 if (frequency <= threshold) {
                     return i;
                 }
             }
 
-            throw hype::error("Could not assign frequency of ", frequency, " to a bin level.");
+            return bin_levels - 1;
         }
 
         Vect<D> encode(const hype::Vector<F, data_t> &data_point) {
@@ -62,7 +62,7 @@ namespace hdvr {
             int bin;
             for (std::size_t i = 0; i < data_point.size(); ++i) {
                 bin = frequency_bin(data_point[i], model.continuousItemMemory.size());
-                auto bin_vec = model.levelMemory[i];
+                auto bin_vec = model.frequencyChannelMemory[i];
                 auto item_vec = model.continuousItemMemory[bin];
                 auto result = mul(bin_vec, item_vec);
                 temp.emplace_back(std::move(result));
@@ -94,11 +94,11 @@ namespace hdvr {
             return class_vectors;
         }
 
-        void configure_memory(const Dataset<Vect<D>, int> &dataset) {
+        void configure_memory(const Dataset<Vect<D>, int> &dataset, float dataset_fraction = 1.0) {
             model.associativeMemory.clear();
             auto class_vectors = get_class_vectors(dataset);
             for (const auto &vectors: class_vectors) {
-                model.associativeMemory.insert(add(vectors));
+                model.associativeMemory.insert(add(std::vector<Vect<D>>(vectors.begin(), vectors.begin() + (vectors.size() * dataset_fraction))));
             }
         }
 
@@ -174,6 +174,7 @@ namespace hdvr {
                         auto train_tmp = Dataset<hype::Vector<F, data_t>, int>(train_paths.first, train_paths.second);
                         auto test_tmp = Dataset<hype::Vector<F, data_t>, int>(test_paths.first, test_paths.second);
                         hype::log_info_nl("DONE");
+
                         hype::log_info("Encoding training data... ");
                         train_dataset = encode(train_tmp);
                         hype::log_info_nl("DONE");
@@ -195,11 +196,12 @@ namespace hdvr {
 
         HDVR(Model<L, D, F, S> &model_) : model(model_) {}
 
-        bool load_datasets(const std::string &dataset_path) {
+        bool load_datasets(const std::string &dataset_path, float dataset_fraction = 1.0) {
             std::array<std::string, 2> extensions{".datmem", ".csv"};
             for (const auto &extension: extensions) {
                 if (load_datasets(dataset_path, extension)) {
-                    configure_memory(train_dataset);
+                    hype::log_info_nl("Loaded ", train_dataset.size(), " training samples, and ", test_dataset.size(), " testing samples.");
+                    configure_memory(train_dataset, dataset_fraction);
                     return true;
                 }
             }
@@ -226,7 +228,7 @@ namespace hdvr {
             }
 
             std::stringstream ss;
-            ss << "\"" << "epochs: " << epochs << ", levels: " << L << ", dimensions: " << D << ", frequency points: "
+            ss << "\"" << "Training: epochs: " << epochs << ", levels: " << L << ", dimensions: " << D << ", frequency points: "
                << F << "\"";
             Metrics metrics(ss.str());
 

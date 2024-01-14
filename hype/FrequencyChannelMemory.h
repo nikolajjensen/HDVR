@@ -24,11 +24,11 @@
 namespace hype {
 
     template<typename T>
-    class LevelMemory : public Memory<T> {
+    class FrequencyChannelMemory : public Memory<T> {
     public:
         using Memory<T>::Memory;
 
-        LevelMemory(int size, int dimensions, SeedingStrategy seedingStrategy) {
+        FrequencyChannelMemory(int size, int dimensions, SeedingStrategy seedingStrategy) {
             for (std::size_t i = 0; i < size; ++i) {
                 this->data.emplace_back(T(seedingStrategy));
             }

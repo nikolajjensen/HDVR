@@ -24,6 +24,6 @@
 namespace hdvr {
     using data_t = float;
     template<std::size_t D>
-        //using Vect = hype::BinaryVector<D>;
+    //using Vect = hype::BinaryVector<D>;
     using Vect = hype::Vector<D, data_t>;
 } // namespace hdvr
