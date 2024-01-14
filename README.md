@@ -1,4 +1,6 @@
 # Hype & HDVR
+> This repository is part of my individual project for the L46 module (Principles of Machine Learning Systems) in my MPhil in Advanced Computer Science at the University of Cambridge.
+
 This repository contains **Hype**, a hyperdimensional computing framework built on the standard library, and **HDVR**, 
 an application of Hype on the [ISOLET dataset](https://archive.ics.uci.edu/dataset/54/isolet) for speech recognition.
 
